@@ -11,9 +11,9 @@ let player = {
     dx: 0,
     dy: 0,
 
-    speed: 200,      // ⬅️ DAHA HIZLI
-    jump: 400,      // ⬅️ DAHA YÜKSEK ZIPLAMA
-    gravity: 0.6,
+    speed: 8,     // ✔️ Stabil hızlı
+    jump: 15,     // ✔️ Güçlü ama kontrol edilebilir
+    gravity: 0.7,
 
     onGround: false
 };
@@ -29,7 +29,7 @@ let keys = {};
 window.addEventListener("keydown", e => keys[e.code] = true);
 window.addEventListener("keyup", e => keys[e.code] = false);
 
-// ÇARPIŞMA KONTROLÜ
+// ÇARPIŞMA
 function hit(a, b) {
     return (
         a.x < b.x + b.w &&
@@ -39,24 +39,22 @@ function hit(a, b) {
     );
 }
 
-// GÜNCELLEME
+// UPDATE
 function update() {
 
-    // SAĞ / SOL
+    // HAREKET
     if (keys["ArrowRight"]) player.x += player.speed;
     if (keys["ArrowLeft"]) player.x -= player.speed;
 
-    // YERÇEKİMİ
+    // GRAVITY
     player.dy += player.gravity;
     player.y += player.dy;
 
     player.onGround = false;
 
-    // PLATFORM ÇARPIŞMA
+    // PLATFORM
     for (let p of platforms) {
         if (hit(player, p)) {
-
-            // ÜSTÜNE BASMA
             if (player.dy > 0) {
                 player.y = p.y - player.h;
                 player.dy = 0;
@@ -78,17 +76,15 @@ function update() {
     }
 }
 
-// ÇİZİM
+// DRAW
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // PLATFORM
     ctx.fillStyle = "green";
     for (let p of platforms) {
         ctx.fillRect(p.x, p.y, p.w, p.h);
     }
 
-    // PLAYER
     ctx.fillStyle = "red";
     ctx.fillRect(player.x, player.y, player.w, player.h);
 }
