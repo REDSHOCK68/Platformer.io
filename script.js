@@ -34,19 +34,46 @@ window.addEventListener("keyup", function(e) {
 // 4. Güncelleme Fonksiyonu
 // 4. Güncelleme Fonksiyonu
 function update() {
-    // Yatay Hareket
+    // 1. Yatay Hareket
     if (keys["ArrowRight"]) player.x += 5;
     if (keys["ArrowLeft"]) player.x -= 5;
 
-    // Yer Çekimi ve Dikey Hareket
+    // 2. Yer çekimini hıza ekle
     player.dy += player.gravity;
+    // 3. Geçici olarak yeni Y konumunu hesapla
     player.y += player.dy;
 
-    // Zemin Kontrolü (Canvas'ın altı - Ana Zemin)
+    // 4. Zemin (Canvas Altı) Kontrolü
     if (player.y + player.height > canvas.height) {
         player.y = canvas.height - player.height;
         player.dy = 0;
+        player.onGround = true; // Yerdeyiz
+    } else {
+        player.onGround = false; // Havadayız
     }
+
+    // 5. Platform Çarpışma Kontrolü
+    platforms.forEach(plat => {
+        // Karakter platformun hizasındaysa
+        if (player.x + player.width > plat.x && player.x < plat.x + plat.width) {
+            // Karakter düşerken ayakları platformun üstünden geçti mi?
+            if (player.dy > 0 && 
+                player.y + player.height > plat.y && 
+                player.y + player.height - player.dy <= plat.y) {
+                
+                player.dy = 0;
+                player.y = plat.y - player.height;
+                player.onGround = true; // Platformun üstündeyiz
+            }
+        }
+    });
+
+    // 6. Zıplama (Sadece yerdeyken veya platformdayken)
+    if (keys["ArrowUp"] && player.onGround) {
+        player.dy = -player.jumpForce;
+        player.onGround = false; // Zıpladık, artık yerde değiliz
+    }
+}
 
     // --- YENİ EKLENEN: PLATFORM ÇARPIŞMA KONTROLÜ ---
     platforms.forEach(plat => {
