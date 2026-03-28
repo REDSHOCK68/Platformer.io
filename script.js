@@ -12,18 +12,7 @@ let player = {
     jumpForce: 10,
     gravity: 0.5
 };
- // 1. Yer çekimini hıza ekle
-player.dy += player.gravity;
 
-// 2. Hızı karakterin y konumuna ekle (düşüş başlasın)
-player.y += player.dy;
-
-// 3. Zemin Kontrolü (Collision)
-// Eğer karakterin ayakları (y + height) canvas'ın alt sınırından büyükse:
-if (player.y + player.height > canvas.height) {
-    player.y = canvas.height - player.height; // Karakteri zemine sabitle
-    player.dy = 0; // Düşme hızını sıfırla
-}   
 // Çizim işlemini bir fonksiyon içine alalım 🎨
 function draw() {
     // Önce ekranı temizlemeliyiz, yoksa eski çizimler kalır!
@@ -50,21 +39,26 @@ window.addEventListener("keyup", function(e) {
 });
 
 function update() {
-    //sağ ok tuşuna basılıyorsa x'i artır
-    if (keys ["ArrowRight"]) {
-        player.x += 5;
+    // Yatay Hareket
+    if (keys["ArrowRight"]) player.x += 5;
+    if (keys["ArrowLeft"]) player.x -= 5;
+
+    // --- YER ÇEKİMİ VE DİKEY HAREKET ---
+    
+    // 1. Yer çekimini hıza ekle
+    player.dy += player.gravity;
+    // 2. Hızı konuma ekle
+    player.y += player.dy;
+
+    // 3. Zemin Kontrolü
+    if (player.y + player.height > canvas.height) {
+        player.y = canvas.height - player.height;
+        player.dy = 0; // Yere değince hızı sıfırla
     }
-    //sol ok tuşuna basılıyorsa x'i azalt
-    if (keys ["ArrowLeft"]) {
-        player.x -= 5;
-    }
-    //yukarı ok tuşuna basılıyorsa x'i azalt
-    if (keys ["ArrowUp"]) {
-        player.y += 5;
-    }
-    //yukarı ok tuşuna basılıyorsa x'i azalt
-    if (keys ["ArrowDown"]) {
-        player.y -= 5;
+
+    // 4. Zıplama (Sadece yerdeyken zıplayabilsin)
+    if (keys["ArrowUp"] && player.dy === 0) {
+        player.dy = -player.jumpForce; // Yukarı doğru fırlat!
     }
 }
 
