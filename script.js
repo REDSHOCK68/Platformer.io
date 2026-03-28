@@ -93,3 +93,17 @@ function gameLoop() {
 
 // Başlat
 gameLoop();
+
+// Her bir platform için tek tek kontrol et
+platforms.forEach(plat => {
+    // 1. Yatayda (X ekseninde) karakter platformun üzerinde mi?
+    if (player.x < plat.x + plat.width && player.x + player.width > plat.x) {
+        
+        // 2. Karakterin ayakları platformun üst hizasına geldi mi?
+        // (Eski konumu yukarda, yeni konumu aşağıdaysa çarpma gerçekleşir)
+        if (player.y + player.height <= plat.y && player.y + player.height + player.dy >= plat.y) {
+            player.dy = 0; // Düşmeyi durdur
+            player.y = plat.y - player.height; // Karakteri platformun üstüne oturt
+        }
+    }
+});    
