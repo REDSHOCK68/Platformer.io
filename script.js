@@ -12,11 +12,11 @@ let player = {
     dx: 0,
     dy: 0,
 
-    speed: 1,
+    speed: 2.5,
     maxSpeed: 5,
     friction: 0.8,
 
-    jumpForce: 20,
+    jumpForce: 40,
     gravity: 0.5,
 
     onGround: false
