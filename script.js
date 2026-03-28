@@ -34,3 +34,22 @@ window.addEventListener("keydown", function(e) {
 window.addEventListener("keyup", function(e) {
     keys[e.code] = false;
 });
+
+function update() {
+    //sağ ok tuşuna basılıyorsa x'i artır
+    if (keys ["ArrowRight"]) {
+        player.x += 5;
+    }
+    //sol ok tuşuna basılıyorsa x'i azalt
+    if (keys ["ArrowLeft"]) {
+        player.x -= 5;
+    }+
+}
+
+function gameLoop() {
+    update(); //önce
+    draw();   // Sonra ekrana çiz
+    requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
