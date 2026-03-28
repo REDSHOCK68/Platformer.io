@@ -43,7 +43,7 @@ function update() {
     //sol ok tuşuna basılıyorsa x'i azalt
     if (keys ["ArrowLeft"]) {
         player.x -= 5;
-    }+
+    }
 }
 
 function gameLoop() {
