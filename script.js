@@ -1,90 +1,130 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// 1. Karakter Özellikleri
+// PLAYER
 let player = {
     x: 50,
     y: 200,
     width: 30,
     height: 30,
     color: "red",
+
+    dx: 0,
     dy: 0,
+
+    speed: 0.5,
+    maxSpeed: 5,
+    friction: 0.8,
+
     jumpForce: 10,
     gravity: 0.5,
-    onGround: false // Karakterin bir yere basıp basmadığını takip eder
+
+    onGround: false
 };
 
-// 2. Platformlar Listesi
+// PLATFORMS
 let platforms = [
     { x: 200, y: 300, width: 200, height: 20 },
     { x: 450, y: 200, width: 150, height: 20 },
     { x: 100, y: 150, width: 100, height: 20 }
 ];
 
-// 3. Tuş Kontrolleri
+// INPUT
 let keys = {};
 window.addEventListener("keydown", (e) => keys[e.code] = true);
 window.addEventListener("keyup", (e) => keys[e.code] = false);
 
-// 4. Güncelleme Fonksiyonu (Tüm mantık burada toplanmalı)
+// COLLISION CHECK
+function isColliding(a, b) {
+    return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+    );
+}
+
+// UPDATE
 function update() {
-    // Yatay Hareket
-    if (keys["ArrowRight"]) player.x += 5;
-    if (keys["ArrowLeft"]) player.x -= 5;
 
-    // Yer Çekimi Uygula
+    // HORIZONTAL INPUT (ACCELERATION)
+    if (keys["ArrowRight"]) player.dx += player.speed;
+    if (keys["ArrowLeft"]) player.dx -= player.speed;
+
+    // LIMIT SPEED
+    if (player.dx > player.maxSpeed) player.dx = player.maxSpeed;
+    if (player.dx < -player.maxSpeed) player.dx = -player.maxSpeed;
+
+    // APPLY FRICTION
+    player.dx *= player.friction;
+
+    // GRAVITY
     player.dy += player.gravity;
-    player.y += player.dy;
 
-    // Başlangıçta havada olduğunu varsayalım
+    // MOVE X
+    player.x += player.dx;
+
+    // X COLLISION
+    platforms.forEach(plat => {
+        if (isColliding(player, plat)) {
+            if (player.dx > 0) {
+                player.x = plat.x - player.width;
+            } else if (player.dx < 0) {
+                player.x = plat.x + plat.width;
+            }
+            player.dx = 0;
+        }
+    });
+
+    // MOVE Y
+    player.y += player.dy;
     player.onGround = false;
 
-    // Zemin Kontrolü (Canvas Altı)
+    // Y COLLISION
+    platforms.forEach(plat => {
+        if (isColliding(player, plat)) {
+            if (player.dy > 0) {
+                // Üstten çarpma
+                player.y = plat.y - player.height;
+                player.dy = 0;
+                player.onGround = true;
+            } else if (player.dy < 0) {
+                // Alttan çarpma
+                player.y = plat.y + plat.height;
+                player.dy = 0;
+            }
+        }
+    });
+
+    // FLOOR
     if (player.y + player.height > canvas.height) {
         player.y = canvas.height - player.height;
         player.dy = 0;
         player.onGround = true;
     }
 
-    // Platform Çarpışma Kontrolü
-    platforms.forEach(plat => {
-        // Karakter platformun X hizasındaysa
-        if (player.x + player.width > plat.x && player.x < plat.x + plat.width) {
-            // Karakter düşerken ayakları platformun üst sınırına değdi mi?
-            if (player.dy > 0 && 
-                player.y + player.height > plat.y && 
-                player.y + player.height - player.dy <= plat.y) {
-                
-                player.dy = 0;
-                player.y = plat.y - player.height;
-                player.onGround = true;
-            }
-        }
-    });
-
-    // Zıplama (Sadece yerdeyken)
+    // JUMP
     if (keys["ArrowUp"] && player.onGround) {
         player.dy = -player.jumpForce;
-        player.onGround = false;
     }
 }
 
-// 5. Çizim Fonksiyonu
+// DRAW
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Platformları çiz
+    // Platforms
     ctx.fillStyle = "green";
-    platforms.forEach(plat => {
-        ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+    platforms.forEach(p => {
+        ctx.fillRect(p.x, p.y, p.width, p.height);
     });
 
-    // Karakteri çiz
+    // Player
     ctx.fillStyle = player.color;
     ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
-// 6. Oyun Döngüsü
+// LOOP
 function gameLoop() {
     update();
     draw();
