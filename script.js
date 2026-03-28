@@ -1,9 +1,23 @@
-// 1. Canvas elementini HTML'den çekiyoruz
 const canvas = document.getElementById('gameCanvas');
-
-// 2. Çizim yapabilmek için "2d" bağlamını (context) alıyoruz
 const ctx = canvas.getContext('2d');
 
-// Test için ekrana basit bir kare (karakterimiz) çizelim
-ctx.fillStyle = "red"; // Fırça rengini kırmızı yap
-ctx.fillRect(50, 50, 40, 40); // (x: 50, y: 50) konumuna, 40x40 boyutunda bir kare çiz
+// Karakterimizin özelliklerini bir obje içinde tutalım 📦
+let player = {
+    x: 50,
+    y: 200,
+    width: 30,
+    height: 30,
+    color: "red"
+};
+
+// Çizim işlemini bir fonksiyon içine alalım 🎨
+function draw() {
+    // Önce ekranı temizlemeliyiz, yoksa eski çizimler kalır!
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Karakteri çiz
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+draw(); // Fonksiyonu çalıştır
