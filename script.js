@@ -13,6 +13,13 @@ let player = {
     gravity: 0.5
 };
 
+// Platformlarımızı tutan bir liste 🧱
+let platforms = [
+    { x: 200, y: 300, width: 200, height: 20 },
+    { x: 450, y: 200, width: 150, height: 20 },
+    { x: 100, y: 150, width: 100, height: 20 }
+];
+
 // Çizim işlemini bir fonksiyon içine alalım 🎨
 function draw() {
     // Önce ekranı temizlemeliyiz, yoksa eski çizimler kalır!
