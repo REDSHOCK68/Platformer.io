@@ -32,6 +32,7 @@ window.addEventListener("keyup", function(e) {
 });
 
 // 4. Güncelleme Fonksiyonu
+// 4. Güncelleme Fonksiyonu
 function update() {
     // Yatay Hareket
     if (keys["ArrowRight"]) player.x += 5;
@@ -41,13 +42,27 @@ function update() {
     player.dy += player.gravity;
     player.y += player.dy;
 
-    // Zemin Kontrolü (Canvas'ın altı)
+    // Zemin Kontrolü (Canvas'ın altı - Ana Zemin)
     if (player.y + player.height > canvas.height) {
         player.y = canvas.height - player.height;
         player.dy = 0;
     }
 
-    // Zıplama (Sadece yerdeyken)
+    // --- YENİ EKLENEN: PLATFORM ÇARPIŞMA KONTROLÜ ---
+    platforms.forEach(plat => {
+        // 1. Karakter platformun yatay olarak hizasında mı?
+        if (player.x < plat.x + plat.width && player.x + player.width > plat.x) {
+            
+            // 2. Karakter yukarıdan aşağı doğru düşerken platformun üstüne mi denk geliyor?
+            if (player.y + player.height <= plat.y && player.y + player.height + player.dy >= plat.y) {
+                player.dy = 0; // Düşmeyi durdur
+                player.y = plat.y - player.height; // Karakterin ayaklarını platformun tam üstüne sabitle
+            }
+        }
+    });
+    // ------------------------------------------------
+
+    // Zıplama (Sadece yerdeyken veya bir platformun üzerindeyken)
     if (keys["ArrowUp"] && player.dy === 0) {
         player.dy = -player.jumpForce;
     }
