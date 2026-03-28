@@ -11,8 +11,8 @@ let player = {
     dx: 0,
     dy: 0,
 
-    speed: 20,      // ⬅️ DAHA HIZLI
-    jump: 50,      // ⬅️ DAHA YÜKSEK ZIPLAMA
+    speed: 50,      // ⬅️ DAHA HIZLI
+    jump: 100,      // ⬅️ DAHA YÜKSEK ZIPLAMA
     gravity: 0.6,
 
     onGround: false
