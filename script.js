@@ -7,7 +7,7 @@ let player = {
     y: 200,
     width: 30,
     height: 30,
-    color: "red
+    color: "red"
     dy: 0,
     jumpForce: 10,
     gravity: 0.5
