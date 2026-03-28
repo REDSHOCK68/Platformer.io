@@ -10,7 +10,8 @@ let player = {
     color: "red",
     dy: 0,
     jumpForce: 10,
-    gravity: 0.5
+    gravity: 0.5,
+    onGround: false // Karakterin bir yere basıp basmadığını takip eder
 };
 
 // 2. Platformlar Listesi
@@ -22,82 +23,54 @@ let platforms = [
 
 // 3. Tuş Kontrolleri
 let keys = {};
+window.addEventListener("keydown", (e) => keys[e.code] = true);
+window.addEventListener("keyup", (e) => keys[e.code] = false);
 
-window.addEventListener("keydown", function(e) {
-    keys[e.code] = true;
-});
-
-window.addEventListener("keyup", function(e) {
-    keys[e.code] = false;
-});
-
-// 4. Güncelleme Fonksiyonu
-// 4. Güncelleme Fonksiyonu
+// 4. Güncelleme Fonksiyonu (Tüm mantık burada toplanmalı)
 function update() {
-    // 1. Yatay Hareket
+    // Yatay Hareket
     if (keys["ArrowRight"]) player.x += 5;
     if (keys["ArrowLeft"]) player.x -= 5;
 
-    // 2. Yer çekimini hıza ekle
+    // Yer Çekimi Uygula
     player.dy += player.gravity;
-    // 3. Geçici olarak yeni Y konumunu hesapla
     player.y += player.dy;
 
-    // 4. Zemin (Canvas Altı) Kontrolü
+    // Başlangıçta havada olduğunu varsayalım
+    player.onGround = false;
+
+    // Zemin Kontrolü (Canvas Altı)
     if (player.y + player.height > canvas.height) {
         player.y = canvas.height - player.height;
         player.dy = 0;
-        player.onGround = true; // Yerdeyiz
-    } else {
-        player.onGround = false; // Havadayız
+        player.onGround = true;
     }
 
-    // 5. Platform Çarpışma Kontrolü
+    // Platform Çarpışma Kontrolü
     platforms.forEach(plat => {
-        // Karakter platformun hizasındaysa
+        // Karakter platformun X hizasındaysa
         if (player.x + player.width > plat.x && player.x < plat.x + plat.width) {
-            // Karakter düşerken ayakları platformun üstünden geçti mi?
+            // Karakter düşerken ayakları platformun üst sınırına değdi mi?
             if (player.dy > 0 && 
                 player.y + player.height > plat.y && 
                 player.y + player.height - player.dy <= plat.y) {
                 
                 player.dy = 0;
                 player.y = plat.y - player.height;
-                player.onGround = true; // Platformun üstündeyiz
+                player.onGround = true;
             }
         }
     });
 
-    // 6. Zıplama (Sadece yerdeyken veya platformdayken)
+    // Zıplama (Sadece yerdeyken)
     if (keys["ArrowUp"] && player.onGround) {
         player.dy = -player.jumpForce;
-        player.onGround = false; // Zıpladık, artık yerde değiliz
-    }
-}
-
-    // --- YENİ EKLENEN: PLATFORM ÇARPIŞMA KONTROLÜ ---
-    platforms.forEach(plat => {
-        // 1. Karakter platformun yatay olarak hizasında mı?
-        if (player.x < plat.x + plat.width && player.x + player.width > plat.x) {
-            
-            // 2. Karakter yukarıdan aşağı doğru düşerken platformun üstüne mi denk geliyor?
-            if (player.y + player.height <= plat.y && player.y + player.height + player.dy >= plat.y) {
-                player.dy = 0; // Düşmeyi durdur
-                player.y = plat.y - player.height; // Karakterin ayaklarını platformun tam üstüne sabitle
-            }
-        }
-    });
-    // ------------------------------------------------
-
-    // Zıplama (Sadece yerdeyken veya bir platformun üzerindeyken)
-    if (keys["ArrowUp"] && player.dy === 0) {
-        player.dy = -player.jumpForce;
+        player.onGround = false;
     }
 }
 
 // 5. Çizim Fonksiyonu
 function draw() {
-    // Ekranı temizle
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Platformları çiz
@@ -118,19 +91,4 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// Başlat
 gameLoop();
-
-// Her bir platform için tek tek kontrol et
-platforms.forEach(plat => {
-    // 1. Yatayda (X ekseninde) karakter platformun üzerinde mi?
-    if (player.x < plat.x + plat.width && player.x + player.width > plat.x) {
-        
-        // 2. Karakterin ayakları platformun üst hizasına geldi mi?
-        // (Eski konumu yukarda, yeni konumu aşağıdaysa çarpma gerçekleşir)
-        if (player.y + player.height <= plat.y && player.y + player.height + player.dy >= plat.y) {
-            player.dy = 0; // Düşmeyi durdur
-            player.y = plat.y - player.height; // Karakteri platformun üstüne oturt
-        }
-    }
-});    
