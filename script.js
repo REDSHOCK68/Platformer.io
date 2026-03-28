@@ -44,6 +44,14 @@ function update() {
     if (keys ["ArrowLeft"]) {
         player.x -= 5;
     }
+    //yukarı ok tuşuna basılıyorsa x'i azalt
+    if (keys ["ArrowUp"]) {
+        player.y += 5;
+    }
+    //yukarı ok tuşuna basılıyorsa x'i azalt
+    if (keys ["ArrowDown"]) {
+        player.y -= 5;
+    }
 }
 
 function gameLoop() {
