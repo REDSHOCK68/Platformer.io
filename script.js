@@ -7,9 +7,23 @@ let player = {
     y: 200,
     width: 30,
     height: 30,
-    color: "red"
+    color: "red
+    dy: 0,
+    jumpForce: 10,
+    gravity: 0.5
 };
+ // 1. Yer çekimini hıza ekle
+player.dy += player.gravity;
 
+// 2. Hızı karakterin y konumuna ekle (düşüş başlasın)
+player.y += player.dy;
+
+// 3. Zemin Kontrolü (Collision)
+// Eğer karakterin ayakları (y + height) canvas'ın alt sınırından büyükse:
+if (player.y + player.height > canvas.height) {
+    player.y = canvas.height - player.height; // Karakteri zemine sabitle
+    player.dy = 0; // Düşme hızını sıfırla
+}   
 // Çizim işlemini bir fonksiyon içine alalım 🎨
 function draw() {
     // Önce ekranı temizlemeliyiz, yoksa eski çizimler kalır!
