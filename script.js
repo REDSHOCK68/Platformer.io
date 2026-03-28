@@ -21,3 +21,16 @@ function draw() {
 }
 
 draw(); // Fonksiyonu çalıştır
+
+//Hangi tuşların basılı olduğunu tutan bir liste
+let keys = {};
+
+//Bir tuşa basıldığında çalışır
+window.addEventListener("keydown", function(e) {
+    keys[e.code] = true;
+});
+
+//Tuş bırakıldığında çalışır
+window.addEventListener("keyup", function(e) {
+    keys[e.code] = false;
+});
